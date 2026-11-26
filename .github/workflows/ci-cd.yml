@@ -1,0 +1,21 @@
+name: Experiment 24 - Flask CI/CD Pipeline
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  test-build-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies and run pytest
+        run: |
+          pip install flask pytest
+          pytest -v
+      - name: Build Docker Image
+        run: docker build -t exp24-flask-cicd:${{ github.run_number }} .
+      - name: Verify Containerized Flask App via pytest
+        run: docker run --rm exp24-flask-cicd:${{ github.run_number }} pytest -v
